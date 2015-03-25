@@ -1,0 +1,79 @@
+\documentclass[a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[pdftex]{graphicx}
+\usepackage{epstopdf}
+\usepackage{pdfpages}
+\usepackage{color}
+\usepackage[pdftex,colorlinks=true,citecolor=black,
+            pagecolor=black,linkcolor=black,menucolor=black,
+            urlcolor=black]{hyperref}
+\usepackage{eufrak}
+\usepackage{amsmath}
+\usepackage{amsbsy}
+\usepackage{eucal}
+%\usepackage{subfigure}
+\usepackage{longtable}
+\usepackage{url}
+\urlstyle{same}
+
+\usepackage{natbib}
+
+\parindent 0mm
+\parskip 3mm
+
+\newcommand*\mean[1]{\bar{#1}}
+
+\pdfinfo{            
+          /Title      (T-61.5140 Machine Learning: Advanced Probabilistic Methods Project)
+          /Author     (Ville Sillanpää, Lauri Viitanen)
+          /Keywords   ()
+}
+
+\title{Classify the glass samples using Gaussian Mixture Models (GMM)}
+\author{Ville Sillanpää, k84338 - Lauri Viitanen, 338853 \\ 
+       {\it ville.sillanpaa@aalto.fi} -
+       {\it lauri.viitanen@aalto.fi}}
+
+\begin{document}
+\maketitle
+\clearpage
+
+%\begin{figure}[]
+%	\includegraphics[]{all_338853_2001.pdf}
+%\end{figure}
+
+\section{Introduction}
+
+\begin{equation}
+\begin{aligned}
+	r[n] &= h[n] * s[n] \leftrightarrow
+		R(e^{j\omega}) = H(e^{j\omega})S(e^{j\omega}) \\
+	r[n] &= \sum_{k=-\infty}^{\infty} h[k]s[n-k] \\
+\end{aligned}
+\end{equation}
+
+%Figure \ref{fig:100_104} shows combinations of these numbers
+
+%\begin{figure}[H]
+%	\includegraphics[scale=0.67]{m100_115_b.eps}
+%	\caption{The amplitude response both in linear and logarithmic
+%		(decibel) scale.}
+%	\label{fig:100_115_b}
+%\end{figure}
+
+\clearpage
+\appendix
+
+\clearpage
+\section*{Appendix A}\label{code:asdf}
+
+Matlab code for asdf.
+
+%\lstinputlisting{asdf.m}
+
+\end{document}
