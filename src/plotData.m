@@ -29,5 +29,19 @@
 % trainLabels testLabels
 % trainIDs testIDs
 data = load('../data/glass_dataset.mat');
+all_data = [data.trainData; data.testData];
+all_labels = [data.trainLabels; data.testLabels];
 
-plotmatrix([data.trainData; data.testData]);
+for i = min(all_labels):max(all_labels)
+    if sum(all_labels==i) > 0
+        figure(i);
+        plotmatrix(all_data(all_labels==i, :));
+
+        filename = sprintf('../img/correlation2d_%d.eps', i);
+        %print(filename, '-depsc2');
+    end
+end
+
+figure(max(all_labels)+1);
+plotmatrix(all_data);
+%print -depsc2 '../img/correlation2d_full.eps'
