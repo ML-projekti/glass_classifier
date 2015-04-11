@@ -61,16 +61,44 @@ categorized into 6 different classes of glass.
 \par
 The goal of the project is to classify the glass samples using Gaussian
 Mixture Models (GMM) in unsupervised and supervised approaches. In the
-unsupervised approach we Use GMMs to find clusters from the full data set and
+unsupervised approach we use GMMs to find clusters from the full data set and
 compare the clustering results with the ground-truth class labels that are
 provided with the data set. In the supervised approach we fit a separate GMM
 for each class label and evaluate the classification performance using the
 fitted models on the test set. The dataset has been randomly divided into
-training (75%) and test sets (25%) keeping an equal proportion of different
+training (75 \%) and test sets (25 \%) keeping an equal proportion of different
 class instances in the training and test sets. In addition, we compare the
 performance of the GMM model with the k-nearest neighbors classifier.
 
 \section{Methodology}
+
+\subsection{Unsupervised Approach}
+
+\subsection{Supervised Approach}
+
+In the supervised approach, the Gaussian mixture model is fitted to every
+class label separately. The model complexities range from 2 to 10 components.
+Class label 4 has no samples in the training data, class label 6 has only six
+samples and class label 5 has nine samples, meaning that using more than nine
+classes already drops the number of class labels from seven to four. Only
+classes 1 and 2 have more than 21 samples.
+
+\par
+The GMM is fitted to the training data using the Expectation-Maximization (EM)
+algorithm. The training halts after 200 iterations or if the log likelihood
+has not changed enough (0.001 units) during the past few iterations (five).
+The resulting fitted Gaussians are then applied to the test data of the same
+classes, producing the log likelihood of the test data being produced by the
+fitted GMM.
+
+\par
+VISUALIZATION HERE
+
+\par
+THEN TALK ABOUT THE MODEL COMPONENT COUNT DISTRIBUTION
+
+\par
+VISUALIZATION HERE
 
 \section{Results}
 
