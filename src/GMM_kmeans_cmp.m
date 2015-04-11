@@ -1,3 +1,4 @@
+% 40 cm valkokultakaulaketju koivurunkokorulle.
 data = load('../data/glass_dataset.mat');
 all_data = [data.trainData; data.testData];
 all_labels = [data.trainLabels; data.testLabels];
@@ -6,11 +7,12 @@ component_counts = 2:10;
 mixtures = zeros(max(component_counts),...
     1+max(all_labels)-min(all_labels),...
     numel(component_counts));
-likelihoods = zeros(1+max(all_labels)-min(all_labels),...
-    numel(component_counts));
+likelihoods = ones(size(data.testData, 1),...
+    1+max(all_labels)-min(all_labels),...
+    numel(component_counts)) * -123456;
 
-for i = 1:numel(component_counts)
-    H = component_counts(i);
+for ii = 1:numel(component_counts)
+    H = component_counts(ii);
     for label = min(all_labels):max(all_labels)
         X = data.trainData(data.trainLabels == label, :)';
 
@@ -23,9 +25,10 @@ for i = 1:numel(component_counts)
             opts.minChangeCount=5;
             opts.minDeterminant=0.0001;
             [P,m,S,loglik,phgn]=GMMem(X,H,opts);
-            mixtures(1:H, label, i) = P;
+            mixtures(1:H, label, ii) = P;
 
-            Y = data.testData(data.testLabels == label, :)';
+            % Calculate the log likelihood of each data point for this GMM.
+            Y = data.testData';
             logpold = zeros(size(Y,2), H);
 
             for i = 1:H
@@ -37,11 +40,17 @@ for i = 1:numel(component_counts)
                 end
             end
 
-            logl=0;
             for n=1:size(Y,2)
-                logl = logl + logsumexp(logpold(n,:),ones(1,H));
+                likelihoods(n, label, ii) = logsumexp(logpold(n,:),ones(1,H));
             end
-            likelihoods(label, i) =  logl;
         end
+    end
+end
+
+predicted_classes = zeros(size(data.testData, 1), numel(component_counts));
+for i = 1:numel(component_counts)
+    for n = 1:size(data.testData, 1)
+        predicted_classes(n, i) = find(...
+            likelihoods(n, :, i) == max(likelihoods(n, :, i), [], 2));
     end
 end
