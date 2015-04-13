@@ -74,6 +74,45 @@ performance of the GMM model with the k-nearest neighbors classifier.
 
 \subsection{Unsupervised Approach}
 
+DP-GMM used with Gamma prior on concentration parameter, Gaussian mean on gaussian mean and inverse wishart on covariance matrix. Model inferred using Gibbs sampling with algorithm by (insert name here). For more detailed description of model see (article).
+
+\par
+Several runs of 5000 samples were were ran. Below is a scatter plot of 5000th sample from one of the runs. The visualization was produced with multidimensional scaling. PCA was tried first, but since the first two components explained only two thirds of variation, we chose to to MDS instead. 
+
+\begin{figure}[H]
+	\includegraphics[scale=0.67]{5000_normalized_data_1.eps}
+	\caption{MDS of unsupervised clustering}
+	\label{mds_unsupervised}
+\end{figure}
+
+As you can see from \ref{fmds_unsupervised}, two dense clouds of points have been identified to belong to three clusters. This result was common to all runs. The points that are spread more sparsely were assigned to various clusters in various runs. 
+
+\par
+The runs created 3-5 clusters, with cluster assignments switching mostly within these sparsely spread points. This means that the model is able to consistently identify the two dense clouds as three different clusters, but that the model is more uncertain about the membership of the more sparse points. Based on this model it is difficult to say what clusters the sparse points belong to or that how many true labels these sparse points represent.
+
+\par
+Below is a histogram, which compares our model's label distribution to the true distribution of labels
+
+
+\begin{figure}[H]
+	\includegraphics[scale=0.67]{histogram_comparison.eps}
+	\caption{Histogram comparison of predicted versus true labels}
+	\label{histogram_comparison}
+\end{figure}
+
+\par
+As we can see from \ref{histogram_comparison},  There are 7 true labels as opposed to the 5 our model found. Some facts: Two large ones are identified relatively well, but remaining clusters are more troublesome. 5 and 7 might be similar.  But based on histogram its difficult to say if it is so. Let's look at MDS-visualization of true labels to confirm.
+
+\begin{figure}[H]
+	\includegraphics[scale=0.67]{MDS_true_labels.eps}
+	\caption{Visualization of data using true labels}
+	\label{true_labels}
+\end{figure}
+
+As we can see from \ref{true_labels}, the lower dense region is more overlapping than what our model predicts. Moreover,  quite a few of the more sparse points seem to belong into the label who is very densely concentrated (yellow). Apparently the sparse region contains observations from two additional labels. They seem to overlap so much that it is difficult to see how a gaussian mixture model would be able to find these two labels correcrly. Model and ground truth seem to agree the most about the upper dense cloud. 
+
+
+
 \subsection{Supervised Approach}
 
 In the supervised approach, the Gaussian mixture model is fitted to every
