@@ -28,6 +28,15 @@ figure;
 gscatter(data_vis(:,1),data_vis(:,2),class_id(:,n_iter));
 
 
+%draw histogram of distribution of K over the latter half of the sample
+sample = class_id(:,(n_iter/2)+1:n_iter);
+for i=1:size(sample,2)
+    sample_k(i) = size(unique(sample(:,i)),1);
+end
+
+figure;
+k_dist = histogram(sample_k);
+
 
 %visualize label distribution
 series1 = [class_id(:,n_iter)];

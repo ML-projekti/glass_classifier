@@ -72,47 +72,94 @@ performance of the GMM model with the k-nearest neighbors classifier.
 
 \section{Methodology}
 
+This section describes the methods used in the analysis. Unsupervised and supervised approaches are described in their own subsections.
+
+Unsupervised classification was done using Gaussian Mixture Model with Dirichlet Process prior (sometimes referred to as Infinite Gaussian Mixture model). Supervised classification was done using Gaussian Mixture Model (GMM) with no prior distributions for model parameters.
+
 \subsection{Unsupervised Approach}
 
-DP-GMM used with Gamma prior on concentration parameter, Gaussian mean on gaussian mean and inverse wishart on covariance matrix. Model inferred using Gibbs sampling with algorithm by (insert name here). For more detailed description of model see (article).
+Dirichlet Process Gaussian Mixture Model (DP-GMM) was selected or unsupervised classification, as it does not require user to specify the number of clusters beforehand. Instead, the model allows structure of data define how many clusters the model ends up with. This is a major asset when compared to traditional GMM,  as it is often difficult to assess how many clusters an 'optimal' model has. This property is especially of use in this analysis, where we don't really know anything about the data beforehand.
 
-\par
-Several runs of 5000 samples were were ran. Below is a scatter plot of 5000th sample from one of the runs. The visualization was produced with multidimensional scaling. PCA was tried first, but since the first two components explained only two thirds of variation, we chose to to MDS instead. 
+The specification of the model is as follows. Remainder of this subsection is  brief adaptation from Wood et al. (2006) [2]. For more elaborate description of model with appropriate referencing to previous work leading into this model specification, see [2]. 
 
-\begin{figure}[H]
-	\includegraphics[scale=0.67]{5000_normalized_data_1.eps}
-	\caption{MDS of unsupervised clustering}
-	\label{mds_unsupervised}
-\end{figure}
+ Our model assumes that our dataset comes from the following generative model:
+ 
+ \begin{equation}
+ \begin{aligned}
+ 	c_i | \pi \sim Multinomial(\cdot | \pi) \\
+	y_i | c_i = k, \theta \sim N(\cdot | \theta_k)
+ \end{aligned}
+ \end{equation}
+ 
+Where $C=\{c\}\}^{N}_{i=1}$ indicate which class each observation belongs to, $\theta=\{\theta_k\}^K_{k=1}=\{\mu, \Sigma_{k}\}$ are parameters that characterize each class distribution, $Y=[y_i, ... y_N]$ are observations and $\pi=\{\pi_k\}^K_{k=1}=P(c_i=k)$ are class membership distribution parameters.
 
-As you can see from \ref{fmds_unsupervised}, two dense clouds of points have been identified to belong to three clusters. This result was common to all runs. The points that are spread more sparsely were assigned to various clusters in various runs. 
+We model this data generation process with the following model (assuming $K$, the number of classes, is finite):
 
-\par
-The runs created 3-5 clusters, with cluster assignments switching mostly within these sparsely spread points. This means that the model is able to consistently identify the two dense clouds as three different clusters, but that the model is more uncertain about the membership of the more sparse points. Based on this model it is difficult to say what clusters the sparse points belong to or that how many true labels these sparse points represent.
+ \begin{equation}
+ \begin{aligned}
+	\pi | \alpha \sim Dirichlet(\cdot | \frac{\alpha}{K}, ... , \frac{\alpha}{K}) \\
+ 	\theta \sim G_0
+ \end{aligned}
+\end{equation}
 
-\par
-Below is a histogram, which compares our model's label distribution to the true distribution of labels
+Where $\theta \sim G_0$ is shorthand for
 
-
-\begin{figure}[H]
-	\includegraphics[scale=0.67]{histogram_comparison.eps}
-	\caption{Histogram comparison of predicted versus true labels}
-	\label{histogram_comparison}
-\end{figure}
-
-\par
-As we can see from \ref{histogram_comparison},  There are 7 true labels as opposed to the 5 our model found. Some facts: Two large ones are identified relatively well, but remaining clusters are more troublesome. 5 and 7 might be similar.  But based on histogram its difficult to say if it is so. Let's look at MDS-visualization of true labels to confirm.
-
-\begin{figure}[H]
-	\includegraphics[scale=0.67]{MDS_true_labels.eps}
-	\caption{Visualization of data using true labels}
-	\label{true_labels}
-\end{figure}
-
-As we can see from \ref{true_labels}, the lower dense region is more overlapping than what our model predicts. Moreover,  quite a few of the more sparse points seem to belong into the label who is very densely concentrated (yellow). Apparently the sparse region contains observations from two additional labels. They seem to overlap so much that it is difficult to see how a gaussian mixture model would be able to find these two labels correcrly. Model and ground truth seem to agree the most about the upper dense cloud. 
-
-
-
+ \begin{equation}
+ \begin{aligned}
+ \Sigma_{k} \sim Inverse-Wishart_{v0}(\Lambda^{-1}_0) \\
+ \mu \sim N(\mu_0, \Sigma_{k}/\kappa_0)
+ \end{aligned}
+ \end{equation}
+ 
+ The parameters of prior distributions Normal, Inverse-Wishart and (symmetric) Dirichlet encode our beliefs about parameters of the system. Under this model posterior distribution is
+ 
+  \begin{equation}
+  \begin{aligned}
+  P(C, \theta, \pi, \alpha | Y) \\
+  \propto P(Y | C, \theta,) P(\theta | G_0) \prod_{i=1}^{N} P(C_i | \pi) P(\pi | \alpha) P(\alpha)
+  \end{aligned}
+  \end{equation}
+  
+  The idea is to sample from this distribution assuming that $K \rightarrow \infty$, which means that there are potentially infinite number of classes and that our finite data manifests a finite but unknown amount of them. The sampling is done using Gibbs sampling, which is possible because our prior distributions are all conjugate. Below are the conditional distributions that we sample from sequentially. See Wood (2006) for more detailed derivations and references:
+  
+ \begin{equation}
+ \begin{aligned}
+ P(\theta | C, \pi, \alpha, \theta_{-k}, Y) \\
+ \propto  \prod_{c_i=k} P(y_i | c_i, \theta_{-k}) P_{G_0}(\theta_{-k})
+ \end{aligned}
+ \label{gauss_theta}
+ \end{equation} 
+ 
+ \begin{equation}
+ \begin{aligned}
+ P(c_i = k | C_{-i}, \pi, \alpha, \theta, Y) \\
+ \propto P(y_i | c_{-i}, \theta) P(c_i | C_{-i})
+ \end{aligned}
+ \label{c_equals_k}
+ \end{equation} 
+ 
+  \begin{equation}
+  \begin{aligned}
+  P(c_i | C_{-i}) =\\
+	  \begin{cases}
+	  \frac{m_k}{i-1+\alpha}, & \text{if } k \leq K_{+} \\
+	  \frac{m_k}{i-1+\alpha}, & \text{if } k \geq K_{+}
+	  \end{cases}
+	  \label{crp}
+  \end{aligned}
+  \end{equation} 
+  
+  Where $m_k$ is the number of observations in class $k$.
+  
+  \par
+  Sample from this model is cluster membership status to all data points and distribution parameters to each existing cluster. The idea in the sampler is to go through all data points in turn, take their class status off and then sample a new class status to them from \ref{c_equals_k} with \ref{crp} allowing that a new cluster can be generated. If new cluster was generated, sample parameters to it from $G_0$. After this sample $\theta$ using \ref{gauss_theta}. This is done until log-likelihood of the model no longer increases substantially (which means that our samples are most likely from posterior and not from some intermediary state of the Markov Chain).
+  
+  The sampler we used was written by Wood (2006) and is available online [3]. This sampler also treats $\alpha$ as a random variable, and samples it for \ref{crp} from Gamma-distribution using Metropolis sampling.
+  
+  We used prior parameters Wood's algorithm had by default. So our prior distributions are $N(0, \Sigma_k / 1,), Inverse-Wishart_{1}(diag(0.3))$, where $diag(0.3)$ is a diagonal matrix with $0.3$ on diagonal. 
+  
+  We ran into problems in initial testing runs, as the algorithm did not seem to find more than 1 cluster for the entire data. As this seemed wrong, we centered each variable to 0 and scaled their variance to 1. While we don't know the root cause for the problems, we guess that it was due to the choice of priors (and some of our variables being quite far away from them). We chose this approach rather than rethinking the priors because it was more convenient to do.
+  
 \subsection{Supervised Approach}
 
 In the supervised approach, the Gaussian mixture model is fitted to every
@@ -141,10 +188,53 @@ VISUALIZATION HERE
 
 \section{Results}
 
+This section describes the results. Results from unsupervised and supervised analysis are presented in their own subsections.
+
+As a summary of results from unsupervised approach, we say that the model was able to identify only one cluster well. With remaining clusters the model had more mixed results. Details that lead to this conclusion are presented in the next paragraph.
+
+\subsection{Unsupervised Approach}
+
+\par
+A Gibbs sampling Markov chain of 5000 observations was ran. Below is the distribution of number of clusters estimated from the last 2500 samples of the chain.
+
+%\begin{figure}[H]
+%	\includegraphics[scale=0.67]{k_dist_5000.eps}
+%	\caption{Cluster amount distribution of data from 2500 samples}
+%	\label{k_dist}
+%\end{figure}
+
+As we can see, typically our model usually found 5 clusters with 6 and 2 being quite likely outcomes as well. The ground truth was that there were 7 clusters. So it seems that the model was unable to characterize this data in a manner that would reflect this.
+
+Reasons for this become evident when we visualize the results. Below is a scatter plot from one of the runs. The visualization was produced with multidimensional scaling. PCA was tried first, but since the first two components explained only two thirds of variation, we chose to to MDS instead. 
+
+%\begin{figure}[H]
+%	\includegraphics[scale=0.67]{5000_normalized_data_1.eps}
+%	\caption{MDS of data with colors representing cluster labels found with DP-GMM}
+%	\label{mds_unsupervised}
+%\end{figure}
+
+As you can see from \ref{mds_unsupervised}, two dense clouds of points have been identified to belong to three clusters. This result was very common in runs that found more than two clusters. The runs that found only two clusters saw the two dense clouds as two separate clusters.
+
+ The points that are spread more sparsely were assigned to various clusters in various runs. Based on inspection of few samples the labeling of these data points was very arbitrary. Hence based on this model it is difficult to say what clusters the sparse points belong to or that how many true labels these sparse points represent.
+
+To see how our model compares with ground truth, let's look at MDS-visualization with points given color codes based on true labels.
+
+%\begin{figure}[H]
+%	\includegraphics[scale=0.67]{MDS_true_labels.eps}
+%	\caption{Visualization with true labels as color codes}
+%	\label{true_labels}
+%\end{figure}
+
+As we can see from \ref{true_labels}, the lower dense region is more overlapping than what our model usually predicts. Moreover,  quite a few of the more sparse points seem to belong into the label who is very densely concentrated in the bottom (yellow). Apparently the sparse region contains observations from two additional labels. They seem to overlap so much that it is difficult to see how a Gaussian mixture model would be able to find these two clusters correctly. Model and ground truth seem to agree the most about the upper dense cloud (label 7 in real data). 
+
 \section{Discussion}
 
 \par
 [1] http://archive.ics.uci.edu/ml/datasets/Glass+Identification
+\par
+[2] F. Wood, S.Goldwater \& M.Black A Non-Parametric Bayesian Approach to Spike Sorting, Department of Computer Science \& Department of Cognitive and Linguistic Sciences, Brown University, Providence, RI, USA, 2006
+
+[3] http://www.gatsby.ucl.ac.uk/~fwood/code.html
 
 %\begin{equation}
 %\begin{aligned}
