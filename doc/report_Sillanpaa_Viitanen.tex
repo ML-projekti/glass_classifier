@@ -177,131 +177,40 @@ The resulting fitted Gaussians are then applied to the test data of the same
 classes, producing the log likelihood of the test data being produced by the
 fitted GMM.
 
-\begin{verbatim}
-                  Two clusters
-    0.53    0       0.47    0       0       0   
-    0.22    0.17    0.50    0       0.11    0   
-    0.25    0       0.75    0       0       0   
-    0       0.50    0       0.25    0.25    0   
-    0       1.00    0       0       0       0   
-    0       0       0       0       0.25    0.75
-
-                 Three clusters
-    0.65    0       0.35    0       0       0   
-    0.33    0.17    0.39    0       0.11    0   
-    0.25    0       0.75    0       0       0   
-    0       0.50    0       0.25    0.25    0   
-    0       0.67    0       0       0.33    0   
-    0       0.13    0       0       0.13    0.75
-
-                 Four clusters
-    0.65    0       0.35    0       0       0   
-    0.39    0.17    0.33    0       0.11    0   
-    0.25    0       0.75    0       0       0   
-    0       0       0       0.25    0.75    0   
-    0       0       0       0       1.00    0   
-    0       0.13    0       0       0.13    0.75
-
-                 Five clusters
-    0.65    0       0.35    0       0       0   
-    0.22    0.17    0.50    0       0.11    0   
-    0.25    0       0.75    0       0       0   
-    0       0       0       0.25    0.75    0   
-    0       0       0       0       1.00    0   
-    0       0.13    0       0       0.13    0.75
- 
-                  Six clusters
-    0.65    0       0.35    0       0       0   
-    0.22    0.17    0.50    0.11    0       0   
-    0.25    0       0.75    0       0       0   
-    0       0.50    0       0.50    0       0   
-    0       1.00    0       0       0       0   
-    0       0.13    0       0.13    0       0.75
-
-                 Seven clusters
-    0.65    0       0.35    0       0       0   
-    0.22    0.17    0.50    0.11    0       0   
-    0.25    0       0.75    0       0       0   
-    0       0.50    0       0.50    0       0   
-    0       1.00    0       0       0       0   
-    0       0.25    0       0       0       0.75
-
-                 Eight clusters
-    0.65    0       0.35    0       0       0   
-    0.22    0.17    0.50    0.11    0       0   
-    0.25    0       0.75    0       0       0   
-    0       0.50    0       0.50    0       0   
-    0       1.00    0       0       0       0   
-    0       0.13    0       0.13    0       0.75
-
-                 Nine clusters
-    0.65    0       0.35    0       0       0   
-    0.22    0.22    0.50    0       0       0.06
-    0.25    0       0.75    0       0       0   
-    0       0.75    0       0       0       0.25
-    0       1.00    0       0       0       0   
-    0       0.13    0       0       0       0.88
-
-                  Ten clusters
-    0.65    0       0.35    0       0       0   
-    0.22    0.22    0.50    0       0       0.06
-    0.25    0       0.75    0       0       0   
-    0       0.75    0       0       0       0.25
-    0       1.00    0       0       0       0   
-    0       0.13    0       0       0       0.88
-
-  Prediction accuracy mean over all cluster counts
-    0.63    0       0.37    0       0       0   
-    0.25    0.18    0.47    0.04    0.05    0.01
-    0.25    0       0.75    0       0       0   
-    0       0.44    0       0.28    0.22    0.06
-    0       0.74    0       0       0.26    0   
-    0       0.13    0       0.03    0.07    0.78
-
-     1 nearest neighbor predicted class accuracy
-    0.88    0.06    0.06    0       0       0   
-    0.06    0.83    0       0       0.11    0   
-    0.50    0       0.50    0       0       0   
-    0       0.50    0       0.50    0       0   
-    0       0       0       0       1.00    0   
-    0.13    0.13    0       0       0       0.75
-\end{verbatim}
-
 \par
-VISUALIZATION HERE
-
-\par
-THEN TALK ABOUT THE MODEL COMPONENT COUNT DISTRIBUTION
-
-\par
-VISUALIZATION HERE
+The class of the GMM that is most likely to produce a data point in the test
+set is selected as the class of the test data point. This is repeated for all
+test data points first for all six GMM's with two clusters, then with all six
+GMM's with three clusters etc., until for every cluster count the test data is
+labeled. The resulting estimated labels are then compared to the known true
+labels of the test data and a confusion matrix is calculated.
 
 \section{Results}
 
 This section describes the results. Results from unsupervised and supervised analysis are presented in their own subsections.
 
-As a summary of results from unsupervised approach, we say that the model was able to identify only one cluster well. With remaining clusters the model had more mixed results. Details that lead to this conclusion are presented in the next paragraph.
+As a summary of results from unsupervised approach, we say that the model was able to identify only one cluster well. With remaining clusters the model had more mixed results. Details that lead to this conclusion are presented in the next paragraph. For supervised method, labels 1, 3 and 7 were recognized with more than 50 \% accuracy, but the performance of GMM-EM algorithm compared to kNN, $ k = 1 $, is not very good.
 
 \subsection{Unsupervised Approach}
 
 \par
 A Gibbs sampling Markov chain of 5000 observations was ran. Below is the distribution of number of clusters estimated from the last 2500 samples of the chain.
 
-%\begin{figure}[H]
-%	\includegraphics[scale=0.67]{k_dist_5000.eps}
-%	\caption{Cluster amount distribution of data from 2500 samples}
-%	\label{k_dist}
-%\end{figure}
+\begin{figure}[H]
+	\includegraphics[trim={2cm 1cm 2cm 1cm},clip,scale=0.56]{k_dist_5000.eps}
+	\caption{Cluster amount distribution of data from 2500 samples}
+	\label{k_dist}
+\end{figure}
 
 As we can see, typically our model usually found 5 clusters with 6 and 2 being quite likely outcomes as well. The ground truth was that there were 7 clusters. So it seems that the model was unable to characterize this data in a manner that would reflect this.
 
 Reasons for this become evident when we visualize the results. Below is a scatter plot from one of the runs. The visualization was produced with multidimensional scaling. PCA was tried first, but since the first two components explained only two thirds of variation, we chose to to MDS instead. 
 
-%\begin{figure}[H]
-%	\includegraphics[scale=0.67]{5000_normalized_data_1.eps}
-%	\caption{MDS of data with colors representing cluster labels found with DP-GMM}
-%	\label{mds_unsupervised}
-%\end{figure}
+\begin{figure}[H]
+	\includegraphics[trim={3.5cm 1.5cm 3cm 1.3cm},clip,scale=0.45]{5000_normalized_data_1.eps}
+	\caption{MDS of data with colors representing cluster labels found with DP-GMM}
+	\label{mds_unsupervised}
+\end{figure}
 
 As you can see from \ref{mds_unsupervised}, two dense clouds of points have been identified to belong to three clusters. This result was very common in runs that found more than two clusters. The runs that found only two clusters saw the two dense clouds as two separate clusters.
 
@@ -309,15 +218,124 @@ As you can see from \ref{mds_unsupervised}, two dense clouds of points have been
 
 To see how our model compares with ground truth, let's look at MDS-visualization with points given color codes based on true labels.
 
-%\begin{figure}[H]
-%	\includegraphics[scale=0.67]{MDS_true_labels.eps}
-%	\caption{Visualization with true labels as color codes}
-%	\label{true_labels}
-%\end{figure}
+\begin{figure}[H]
+	\includegraphics[trim={3.5cm 1.5cm 3cm 1.3cm},clip,scale=0.45]{MDS_true_labels.eps}
+	\caption{Visualization with true labels as color codes}
+	\label{true_labels}
+\end{figure}
 
 As we can see from \ref{true_labels}, the lower dense region is more overlapping than what our model usually predicts. Moreover,  quite a few of the more sparse points seem to belong into the label who is very densely concentrated in the bottom (yellow). Apparently the sparse region contains observations from two additional labels. They seem to overlap so much that it is difficult to see how a Gaussian mixture model would be able to find these two clusters correctly. Model and ground truth seem to agree the most about the upper dense cloud (label 7 in real data). 
 
+\subsection{Supervised Approach}
+
+The listing below shows how the GMM performed.
+All the confusion matrices are very similar with each other. No matter the
+number of clusters, data points in classes 2, 5 and 6, in that order, were the
+most difficult to classify. Classes 7, 3 and 1, in that order, were found most
+reliably. This observation agrees with the results gained from the unsupervised
+approach, where data points in class 7 were found to belong to a single cluster
+distinct from the rest of the data. Clusters 1 and 2 are the largest and
+overlap so heavily that classification method based on comparing normal
+distribution densities tends to systematically favor one of the two
+distributions i.e. the one which has more clustered data points. This behaviour
+could be avoided by using Student's t-distribution or other long tailed
+distribution instead of Gaussians for better robustness against outliers.
+
+\begin{verbatim}
+Mean over all cluster counts
+0.63 0    0.37 0    0    0   
+0.25 0.18 0.47 0.04 0.05 0.01
+0.25 0    0.75 0    0    0   
+0    0.44 0    0.28 0.22 0.06
+0    0.74 0    0    0.26 0   
+0    0.13 0    0.03 0.07 0.78
+\end{verbatim}
+
+\iffalse
+\begin{verbatim}
+        Two clusters                  Three clusters
+0.53 0    0.47 0    0    0      0.65 0    0.35 0    0    0   
+0.22 0.17 0.50 0    0.11 0      0.33 0.17 0.39 0    0.11 0   
+0.25 0    0.75 0    0    0      0.25 0    0.75 0    0    0   
+0    0.50 0    0.25 0.25 0      0    0.50 0    0.25 0.25 0   
+0    1.00 0    0    0    0      0    0.67 0    0    0.33 0   
+0    0    0    0    0.25 0.75   0    0.13 0    0    0.13 0.75
+
+       Four clusters                   Five clusters
+0.65 0    0.35 0    0    0      0.65 0    0.35 0    0    0   
+0.39 0.17 0.33 0    0.11 0      0.22 0.17 0.50 0    0.11 0   
+0.25 0    0.75 0    0    0      0.25 0    0.75 0    0    0   
+0    0    0    0.25 0.75 0      0    0    0    0.25 0.75 0   
+0    0    0    0    1.00 0      0    0    0    0    1.00 0   
+0    0.13 0    0    0.13 0.75   0    0.13 0    0    0.13 0.75
+
+        Six clusters                  Seven clusters
+0.65 0    0.35 0    0    0      0.65 0    0.35 0    0    0   
+0.22 0.17 0.50 0.11 0    0      0.22 0.17 0.50 0.11 0    0   
+0.25 0    0.75 0    0    0      0.25 0    0.75 0    0    0   
+0    0.50 0    0.50 0    0      0    0.50 0    0.50 0    0   
+0    1.00 0    0    0    0      0    1.00 0    0    0    0   
+0    0.13 0    0.13 0    0.75   0    0.25 0    0    0    0.75
+
+      Eight clusters                   Nine clusters
+0.65 0    0.35 0    0    0      0.65 0    0.35 0    0    0   
+0.22 0.17 0.50 0.11 0    0      0.22 0.22 0.50 0    0    0.06
+0.25 0    0.75 0    0    0      0.25 0    0.75 0    0    0   
+0    0.50 0    0.50 0    0      0    0.75 0    0    0    0.25
+0    1.00 0    0    0    0      0    1.00 0    0    0    0   
+0    0.13 0    0.13 0    0.75   0    0.13 0    0    0    0.88
+
+        Ten clusters            Mean over all cluster counts
+0.65 0    0.35 0    0    0      0.63 0    0.37 0    0    0   
+0.22 0.22 0.50 0    0    0.06   0.25 0.18 0.47 0.04 0.05 0.01
+0.25 0    0.75 0    0    0      0.25 0    0.75 0    0    0   
+0    0.75 0    0    0    0.25   0    0.44 0    0.28 0.22 0.06
+0    1.00 0    0    0    0      0    0.74 0    0    0.26 0   
+0    0.13 0    0    0    0.88   0    0.13 0    0.03 0.07 0.78
+\end{verbatim}
+\fi
+
+\par
+The supervised GMM has not very large difference between the performance of
+GMM's with different cluster count. They mean of correct classifications for
+each GMM is between 40 \% and 50 \%, but GMM's with four or five clusters seem
+to perform systematically better than the rest. GMM's with 2, 9 or 10 clusters
+performed clearly the worst. This differs somewhat from the results of the
+DP-GMM approach, where most frequent cluster counts were 5, 6 and 2. The shared
+observation is that the data most probably has five clusters.
+
+\begin{verbatim}
+ kNN confusion matrix, k = 1
+0.88 0.06 0.06 0    0    0   
+0.06 0.83 0    0    0.11 0   
+0.50 0    0.50 0    0    0   
+0    0.50 0    0.50 0    0   
+0    0    0    0    1.00 0   
+0.13 0.13 0    0    0    0.75
+\end{verbatim}
+
+\par
+Finally, the GMM's performance is benchmarked against kNN clutering, $ k = 1 $
+and the distance measure was Eucledian. The trained algorithm's confusion
+matrix upon test data is shown below. The average performance (74 \% of
+classifications were correct) is significantly better than for GMM's with any
+number of clusters. Clusters 1 and 2, the ones with most data, and 6 and 7,
+were predicted with greatest accuracy. The kNN methods is clearly superior for
+the glass dataset classification task.
+
 \section{Discussion}
+
+Neither the unsupervised DP-GMM or the supervised GMM-EM found all six labels,
+nor succeeded in classification. Most common number of labels that the methods
+found was five, with is rather well considering that two of the classes
+cover over two thirds of the data, and some labels are represented with only
+a few data points. Clustering based on round Gaussian distributions is not
+a very good tool for the dataset at hand. The kNN algorithm, $ k = 1 $,
+outperforms both methods by clear margin. This is because ...
+
+\par
+
+VILLE kirjoitatko tähän ajatuksiasi, sulla oli hyvää näkökulmaa tän eron syihin.
 
 \par
 [1] http://archive.ics.uci.edu/ml/datasets/Glass+Identification
@@ -343,14 +361,21 @@ As we can see from \ref{true_labels}, the lower dense region is more overlapping
 %	\label{fig:100_115_b}
 %\end{figure}
 
-\clearpage
-\appendix
+%\begin{center}
+%\begin{tabular}{ c c c c }
+%	                 & $f$, $[f] = Hz$ & $\omega$, $[\omega] = rad/sample$ & $W$ \\
+%	passband cut-off & $f_p \approx 3000$ & $\omega_p \approx 0.6*pi $ & $W_p \approx 0.6 $ \\
+%\end{tabular}
+%\end{center}
 
-\clearpage
-\section*{Appendix A}\label{code:asdf}
-
-Matlab code for asdf.
-
+%\clearpage
+%\appendix
+%
+%\clearpage
+%\section*{Appendix A}\label{code:asdf}
+%
+%Matlab code for asdf.
+%
 %\lstinputlisting{asdf.m}
-
+%
 \end{document}
