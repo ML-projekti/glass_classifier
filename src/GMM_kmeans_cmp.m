@@ -3,6 +3,10 @@ all_data = [data.trainData; data.testData];
 all_labels = [data.trainLabels; data.testLabels];
 num_labels = 1 + max(all_labels) - min(all_labels);
 
+cfsnmat_GMM_rel_sum = zeros(6,6,9);
+
+for master_cycle = 1:10
+
 component_counts = 2:10;
 mixtures = zeros(max(component_counts),...
     num_labels,...
@@ -64,6 +68,11 @@ for i = 1:size(predicted_labels, 2)
     cfsnmat_GMM_rel(:, :, i) = cfsnmat_GMM_abs(:, :, i) ./ repmat(...
         sum(cfsnmat_GMM_abs(:, :, i), 2), [1, 6]);
 end
+
+cfsnmat_GMM_rel_sum = cfsnmat_GMM_rel_sum + cfsnmat_GMM_rel;
+end % of master_cycle
+
+cfsnmat_GMM_rel_sum = cfsnmat_GMM_rel_sum / 10;
 
 model_kNN = fitcknn(data.trainData, data.trainLabels,...
     'Distance', 'euclidean', 'NumNeighbors', 1);
